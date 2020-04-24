@@ -2,6 +2,9 @@
 #include <time.h>
 #include <fstream>
 
+LogEventWarp::~LogEventWarp(){
+  ptr->getLogger()->log(ptr);
+}
 void FileAppender::log(shared_ptr<LogEvent> ptr){
   ofstream outFile(name, ios::app);
   if(!outFile.is_open()) {
@@ -9,14 +12,62 @@ void FileAppender::log(shared_ptr<LogEvent> ptr){
     return;
   }
 
-  outFile << ptr->getTime() << "\t" << ptr->getLevel() << "\t";
+  string lelInfo;
+  switch(ptr->getLevel()) {
+    case INFO:
+      lelInfo = "info";
+      break;
+    case DEBUG:
+      lelInfo = "debug";
+      break;
+    case WARN:
+      lelInfo = "warn";
+      break;
+    case ERROR:
+      lelInfo = "error";
+      break;
+    default:
+      break;
+  }
+  
+  string m_format = "%Y-%M-%D %H:%M:%S";
+  struct tm tm;
+  time_t time = ptr->getTime();
+  localtime_r(&time, &tm);
+  char buf[64];
+  strftime(buf, sizeof(buf), m_format.c_str(), &tm);
+
+  outFile << buf << "\t" << lelInfo << "\t";
   outFile << ptr->getFile() << "\t" << ptr->getLine() << "\t" << ptr->getContent() << endl;
 
   outFile.close();
 }
 
 void stdoutAppender::log(shared_ptr<LogEvent> ptr) {  
-  cout << ptr->getTime() << "\t" << ptr->getLevel() << "\t";
+  string lelInfo;
+  switch(ptr->getLevel()) {
+    case INFO:
+      lelInfo = "info";
+      break;
+    case DEBUG:
+      lelInfo = "debug";
+      break;
+    case WARN:
+      lelInfo = "warn";
+      break;
+    case ERROR:
+      lelInfo = "error";
+      break;
+    default:
+      break;
+  }
+  string m_format = "%Y-%M-%D %H:%M:%S";
+  struct tm tm;
+  time_t time = ptr->getTime();
+  localtime_r(&time, &tm);
+  char buf[64];
+  strftime(buf, sizeof(buf), m_format.c_str(), &tm);
+  cout << buf << "\t" << lelInfo << "\t";
   cout << ptr->getFile() << "\t" << ptr->getLine() << "\t" << ptr->getContent() << endl;
 }
 

@@ -1,11 +1,23 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include <sstream>
 #include <memory>
 using namespace std;
 
 #ifndef LOGGER_H_
 #define LOGGER_H_
+
+
+#define VILIN_LOG(logger, level) \
+  if(logger->getLevel() <= level) \
+    LogEventWarp(shared_ptr<LogEvent>(new LogEvent(logger, time(0), level, __FILE__, __LINE__))).getSS()
+
+#define LOG_INFO(logger) VILIN_LOG(logger, INFO)
+#define LOG_DEBUG(logger) VILIN_LOG(logger, DEBUG)
+#define LOG_WARN(logger) VILIN_LOG(logger, WARN)
+#define LOG_ERROR(logger) VILIN_LOG(logger, ERROR)
+
 enum Level {
   INFO,
   DEBUG,
@@ -13,17 +25,23 @@ enum Level {
   ERROR
 };
 
+
+class Logger;
+
 class LogEvent {
 private:
-  uint32_t time;
+  uint64_t time;
   Level level;
   string file;
   uint32_t line;
-  string content;
+  stringstream content;
+  shared_ptr<Logger> ptr;
 public:
-  LogEvent(uint32_t t, Level l, string f, uint32_t line_, string c):time(t), level(l), file(f), line(line_), content(c){}
+  LogEvent(shared_ptr<Logger> p, uint64_t t, Level l, string f, uint32_t line_, string c):ptr(p), time(t), level(l), file(f), line(line_), content(c){}
   
-  uint32_t getTime() const {
+  LogEvent(shared_ptr<Logger> p, uint64_t t, Level l, string f, uint32_t line_):ptr(p), time(t), level(l), file(f), line(line_){}
+  
+  uint64_t getTime() const {
     return time;
   }
 
@@ -40,7 +58,28 @@ public:
   }
 
   string getContent() const {
+    return content.str();
+  }
+
+  shared_ptr<Logger> getLogger() {
+    return ptr;
+  }
+
+  stringstream& getSS() {
     return content;
+  }
+};
+
+class LogEventWarp {
+private:
+  shared_ptr<LogEvent> ptr;
+public:
+  LogEventWarp(shared_ptr<LogEvent> p) {
+    ptr = p;
+  }
+  ~LogEventWarp();
+  stringstream& getSS() {
+    return ptr->getSS();
   }
 };
 
@@ -83,12 +122,20 @@ private:
   vector<shared_ptr<LogAppender>> appenders;
   Level level;
 public:
+  Logger() : name("defaultLogger"), level(INFO) {
+
+  }
+
   Logger(string n, Level l) : name(n), level(l) {
 
   }
 
   string getName() const {
     return name;
+  }
+
+  Level getLevel() {
+    return level;
   }
 
   void addAppender(shared_ptr<LogAppender> ptr);
