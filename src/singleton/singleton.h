@@ -3,6 +3,9 @@
 #include <memory>
 using namespace std;
 
+#ifndef SINGLETON_H_
+#define SINGLETON_H_
+
 template <class T>
 class Singleton {
 private:
@@ -23,3 +26,5 @@ shared_ptr<T> Singleton<T>::instance() {
   static shared_ptr<T> obj(new T());
   return obj;
 }
+
+#endif

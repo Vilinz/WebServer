@@ -123,11 +123,13 @@ private:
   Level level;
 public:
   Logger() : name("defaultLogger"), level(INFO) {
-
+    addAppender(shared_ptr<LogAppender>(new stdoutAppender("app")));
+    addAppender(shared_ptr<LogAppender>(new FileAppender("fileAppender", "log")));
   }
 
   Logger(string n, Level l) : name(n), level(l) {
-
+    addAppender(shared_ptr<LogAppender>(new stdoutAppender("app")));
+    addAppender(shared_ptr<LogAppender>(new FileAppender("fileAppender", "log")));
   }
 
   string getName() const {

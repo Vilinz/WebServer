@@ -1,16 +1,16 @@
 #include <iostream>
 #include "singleton/singleton.h"
 #include "logger/logger.h"
+#include "net/epoller.h"
+#include "net/server.h"
 
-
-//shared_ptr<Logger> logger(shared_ptr<Logger>(new Logger("my_logger", DEBUG)));
-shared_ptr<Logger> logger = Singleton<Logger>::instance();
 int main() {
-  logger->addAppender(shared_ptr<LogAppender>(new stdoutAppender("app")));
-  logger->addAppender(shared_ptr<LogAppender>(new FileAppender("fileAppender", "log")));
-  LOG_INFO(logger) << "info";
-  LOG_DEBUG(logger) << "debug";
-  LOG_WARN(logger) << "warn";
-  LOG_ERROR(logger) << "ERROR";
+  LOG_INFO(Singleton<Logger>::instance()) << "info";
+  LOG_DEBUG(Singleton<Logger>::instance()) << "debug";
+  LOG_WARN(Singleton<Logger>::instance()) << "warn";
+  LOG_ERROR(Singleton<Logger>::instance()) << "ERROR";
+
+  Vilin::Server s;
+  s.start();
   return 0;
 }
