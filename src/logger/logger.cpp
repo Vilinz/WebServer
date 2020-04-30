@@ -2,6 +2,8 @@
 #include <time.h>
 #include <fstream>
 
+namespace Vilin {
+
 LogEventWarp::~LogEventWarp(){
   ptr->getLogger()->log(ptr);
 }
@@ -90,5 +92,7 @@ void Logger::log(shared_ptr<LogEvent> ptr) {
       appenders[i]->log(ptr);
     }
   }
+}
+
 }
 

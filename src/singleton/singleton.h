@@ -1,10 +1,12 @@
+#ifndef SINGLETON_H_
+#define SINGLETON_H_
+
 #include <iostream>
 #include <mutex>
 #include <memory>
 using namespace std;
 
-#ifndef SINGLETON_H_
-#define SINGLETON_H_
+namespace Vilin {
 
 template <class T>
 class Singleton {
@@ -25,6 +27,8 @@ shared_ptr<T> Singleton<T>::instance() {
   lock_guard<mutex> _(gMutex);
   static shared_ptr<T> obj(new T());
   return obj;
+}
+
 }
 
 #endif

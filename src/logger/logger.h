@@ -1,3 +1,6 @@
+#ifndef LOGGER_H_
+#define LOGGER_H_
+
 #include <iostream>
 #include <vector>
 #include <string>
@@ -5,18 +8,16 @@
 #include <memory>
 using namespace std;
 
-#ifndef LOGGER_H_
-#define LOGGER_H_
-
-
 #define VILIN_LOG(logger, level) \
   if(logger->getLevel() <= level) \
-    LogEventWarp(shared_ptr<LogEvent>(new LogEvent(logger, time(0), level, __FILE__, __LINE__))).getSS()
+    Vilin::LogEventWarp(shared_ptr<Vilin::LogEvent>(new Vilin::LogEvent(logger, time(0), level, __FILE__, __LINE__))).getSS()
 
-#define LOG_INFO(logger) VILIN_LOG(logger, INFO)
-#define LOG_DEBUG(logger) VILIN_LOG(logger, DEBUG)
-#define LOG_WARN(logger) VILIN_LOG(logger, WARN)
-#define LOG_ERROR(logger) VILIN_LOG(logger, ERROR)
+#define LOG_INFO(logger) VILIN_LOG(logger, Vilin::INFO)
+#define LOG_DEBUG(logger) VILIN_LOG(logger, Vilin::DEBUG)
+#define LOG_WARN(logger) VILIN_LOG(logger, Vilin::WARN)
+#define LOG_ERROR(logger) VILIN_LOG(logger, Vilin::ERROR)
+
+namespace Vilin {
 
 enum Level {
   INFO,
@@ -146,5 +147,7 @@ public:
 
   void log(shared_ptr<LogEvent> ptr);
 };
+
+}
 
 #endif

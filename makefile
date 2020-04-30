@@ -1,6 +1,6 @@
-VPATH = src:src/logger:src/singleton:src/net
+VPATH = src:src/logger:src/singleton:src/net:src/base
 compile = g++ -g -std=c++11
-objects = main.o logger.o epoller.o server.o
+objects = main.o logger.o eventBase.o epoller.o looper.o
 
 myServer : $(objects)
 	$(compile) -o server $(objects)
@@ -8,10 +8,14 @@ main.o : main.cpp singleton.h logger.h server.h
 	$(compile) -c $^
 logger.o : logger.cpp logger.h singleton.h
 	$(compile) -c $^
-epoller.o : epoller.cpp epoller.h logger.h singleton.h
+eventBase.o : eventBase.cpp eventBase.h timestamp.h
 	$(compile) -c $^
-server.o : server.cpp epoller.h logger.h singleton.h
+epoller.o : epoller.cpp epoller.h logger.h singleton.h eventBase.h
 	$(compile) -c $^
+looper.o : looper.cpp looper.h epoller.h
+	$(compile) -c $^
+#server.o : server.cpp epoller.h logger.h singleton.h
+#	$(compile) -c $^
 
 clean :
 	rm myServer $(objects)

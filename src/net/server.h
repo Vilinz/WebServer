@@ -1,3 +1,6 @@
+#ifndef SERVER_H_
+#define SERVER_H_
+
 #include <sys/socket.h>
 #include "./../logger/logger.h"
 #include "./../singleton/singleton.h"
@@ -7,9 +10,6 @@
 #include <arpa/inet.h>
 #include <sys/types.h>
 #include <unistd.h>
-
-#ifndef SERVER_H_
-#define SERVER_H_
 
 namespace Vilin {
 	class Server {
