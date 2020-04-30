@@ -41,6 +41,7 @@ int main() {
         int len = recv(client, buf, sizeof(buf), 0);
         buf[len] = '\0';
         std::cout << buf << std::endl;
+        break;
     }
     close(client);
     return 0;

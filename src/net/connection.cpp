@@ -23,7 +23,7 @@ Connection::~Connection()
 // 连接建立后在分配的线程上注册事件
 void Connection::Register()
 {
-    loop_->addEventBase(conn_eventbase_);
+    loop_->AddEventBase(conn_eventbase_);
     if (connection_established_cb_)
         connection_established_cb_(shared_from_this());
 }
@@ -69,18 +69,10 @@ void Connection::Shutdown()
 // 处理可读事件
 void Connection::HandleRead(Timestamp t)
 {
-    int saved_errno = 0;
-    ssize_t n = 0;
-
-    //n = input_buffer_.ReadFd(conn_eventbase_->GetFd(), &saved_errno);
-    if (n > 0)
-    {
-    	;
-    }
-    else 
-    {
-        HandleClose();
-    }
+		std::cout << "read data" << std::endl;
+   	char szRecv[1024] = {};
+   	int nLen = recv(conn_eventbase_->GetFd(), (char*)&szRecv, sizeof(szRecv), 0);
+   	std::cout << szRecv << std::endl;
 }
 
 // 处理可写事件
@@ -95,7 +87,7 @@ void Connection::HandleWrite()
 // 关闭连接
 void Connection::HandleClose()
 {
-    loop_->delEventBase(conn_eventbase_);
+    loop_->DelEventBase(conn_eventbase_);
     if (connection_close_cb_)
         connection_close_cb_(shared_from_this());
     if (suicide_cb_)
