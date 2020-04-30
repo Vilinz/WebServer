@@ -2,27 +2,57 @@
 #define CONNECTION_H_
 
 #include "looper.h"
+#include "./../base/timestamp.h"
+#include <functional>
+#include <memory>
+#include "looper.h"
 
 namespace Vilin {
 
-class Connection {
-private:
+class Connection : public std::enable_shared_from_this<Connection> {
+public:
+	using Callback = std::function<void(const std::shared_ptr<Connection>&)>;
+  using MessageCallback = std::function<void(const std::shared_ptr<Connection>&, Timestamp)>;
+	
+	Connection(Looper* loop, int conn_sockfd, const struct sockaddr_in& local_addr, const struct sockaddr_in& peer_addr);
+  ~Connection();
+
+  // 在loop上注册事件，连接建立时调用
+  void Register();
+
+  void Send(const void* data, size_t len);
+  void Send(const std::string& message);
+
+  void Shutdown();
+
+  // 处理事件
+  void HandleRead(Timestamp t);
+  void HandleWrite();
+  void HandleClose();
+
+  // 设置回调
+  void SetConnectionEstablishedCB(const Callback& cb) { connection_established_cb_ = cb; }
+  void SetMessageArrivalCB(const MessageCallback& cb) { message_arrival_cb_ = cb; }
+  void SetReplyCompleteCB(const Callback& cb) { reply_complete_cb_ = cb; }
+  void SetConnectionCloseCB(const Callback& cb) { connection_close_cb_ = cb; }
+  void SetSuicideCB(const Callback& cb) { suicide_cb_ = cb; }
+
+  const int GetFd() const { return conn_sockfd_; }
+
+ private:
 	Looper *loop_;
 
-	const int connSockFd;
-	std::shared_ptr<EventBase> connEventBase;
+	const int conn_sockfd_;
+	std::shared_ptr<EventBase> conn_eventbase_;
 
-	struct sockaddr_in localAddr;
-	struct sockaddr_in peerAddr;
-public:
-	Connection();
-	~Connection();
+	struct sockaddr_in local_addr_;
+	struct sockaddr_in peer_addr_;
 
-	void register_();
-
-	void handleRead(Timestamp t);
-  void handleWrite();
-  void handleClose();
+	Callback connection_established_cb_;
+	MessageCallback message_arrival_cb_;
+	Callback reply_complete_cb_;
+	Callback connection_close_cb_;
+	Callback suicide_cb_;
 };
 
 }

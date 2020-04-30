@@ -2,9 +2,9 @@
 #define SERVER_H_
 
 #include <sys/socket.h>
-#include "./../logger/logger.h"
-#include "./../singleton/singleton.h"
-#include "epoller.h"
+#include "./../base/timestamp.h"
+#include "connection.h"
+#include "eventBase.h"
 #include <memory>
 #include <netinet/in.h>
 #include <arpa/inet.h>
@@ -12,21 +12,44 @@
 #include <unistd.h>
 
 namespace Vilin {
-	class Server {
-	private:
-		struct sockaddr_in addr;
-		int listen_fd;
-	public:
-		Server() {};
-		void Socket();
-		void Bind();
-		void Listen();
+class Server {
+public:
+    Server(Looper* loop, int port, int thread_num = 1);
+    ~Server();
+    
+    void Start();
 
-		int setUp();
-		void start();
+    // 设置回调
+    void SetConnectionEstablishedCB(Connection::Callback&& cb) { connection_established_cb_ = cb; }
+    void SetMessageArrivalCB(Connection::MessageCallback&& cb) { message_arrival_cb_ = cb; }
+    void SetReplyCompleteCB(Connection::Callback&& cb) { reply_complete_cb_ = cb; }
+    void SetConnectionCloseCB(Connection::Callback&& cb) { connection_close_cb_ = cb; }
 
-		int getFd() const;
-	};
+private:
+    // 处理新连接
+    void HandelNewConnection(Timestamp t);
+
+    // 移除连接
+    void RemoveConnection4CloseCB(const std::shared_ptr<Connection>& conn);
+    void RemoveConnection(int conn_fd);
+
+    Looper* loop_;
+
+    const int accept_sockfd_;
+    struct sockaddr_in addr_;
+    std::shared_ptr<EventBase> accept_eventbase_;
+
+    // 描述符到连接的映射，用来保存所有连接
+    std::map<int, std::shared_ptr<Connection>> connection_map_;
+
+    // 连接建立后的回调函数
+    Connection::Callback connection_established_cb_;
+    // 新消息到来时
+    Connection::MessageCallback message_arrival_cb_;
+    // 答复消息完成时
+    Connection::Callback reply_complete_cb_;
+    Connection::Callback connection_close_cb_;
+};
 }
 
 #endif

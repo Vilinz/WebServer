@@ -1,5 +1,5 @@
 #include "eventBase.h"
-
+#include <iostream>
 namespace Vilin {
 
 EventBase::EventBase(int fd) : 
@@ -12,6 +12,7 @@ EventBase::~EventBase() {}
 
 void EventBase::HandleEvent()
 {
+    std::cout << "handle connect" << std::endl;
     // 服务器端发生异常
     if ((revents_ & EPOLLHUP) && !(revents_ & EPOLLIN))
     {

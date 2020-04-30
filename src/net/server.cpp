@@ -1,49 +1,80 @@
 #include "server.h"
+#include <string.h> //bzero
+#include <netinet/in.h>
+#include "looper.h"
+#include "./../base/util.h"
 
 namespace Vilin {
-void Server::Socket() {
-	listen_fd = socket(AF_INET, SOCK_STREAM, 0);
-	if(listen_fd == -1) {
-		LOG_ERROR(Singleton<Logger>::instance()) << "socket error";
-		exit(-1);
-	}
+
+Server::Server(Looper* loop, int port, int thread_num) :
+    loop_(loop),
+    accept_sockfd_(util::Create())
+{
+    // 创建服务器地址结构
+    bzero(&addr_, sizeof(addr_));
+    addr_.sin_family = AF_INET;
+    addr_.sin_addr.s_addr = htonl(INADDR_ANY);
+    addr_.sin_port = htons(port);
+
+    // 设置可重用及绑定地址结构
+    util::SetReuseAddr(accept_sockfd_);
+    util::Bind(accept_sockfd_, addr_);
+    
+    // 初始化事件
+    accept_eventbase_ = std::make_shared<EventBase>(accept_sockfd_);
+    accept_eventbase_->SetReadCallback(std::bind(&Server::HandelNewConnection, this, std::placeholders::_1));
+    accept_eventbase_->EnableReadEvents();
 }
 
-void Server::Bind() {
-	addr.sin_family = AF_INET;
-	addr.sin_port = htons(8000);
-	addr.sin_addr.s_addr = INADDR_ANY;
-
-	if(bind(listen_fd, (struct sockaddr*)&addr, sizeof(addr)) == -1) {
-		LOG_ERROR(Singleton<Logger>::instance()) << "bing error";
-		exit(-1);
-	}
+Server::~Server()
+{
+    util::Close(accept_sockfd_);
 }
 
-void Server::Listen() {
-	if(listen(listen_fd, 5) == -1) {
-		LOG_ERROR(Singleton<Logger>::instance()) << "listen error";
-		exit(-1);
-	}
+// 启动
+void Server::Start()
+{
+    util::Listen(accept_sockfd_);
+    std::cout << "listening..." << endl;
+    loop_->AddEventBase(accept_eventbase_);
+    loop_->Start();
 }
 
-int Server::setUp() {
-	Socket();
-	Bind();
-	Listen();
-	return listen_fd;
+// 处理新连接
+void Server::HandelNewConnection(Timestamp t)
+{
+    // 客户端地址结构
+    struct sockaddr_in peer_addr;
+    bzero(&peer_addr, sizeof(peer_addr));
+    int conn_fd = util::Accept(accept_sockfd_, &peer_addr);
+    std::cout << "new connection" << std::endl;
+
+    // 从线程池中取用线程给连接使用
+    // Looper* io_loop = thread_pool_->TakeOutLoop();
+    std::shared_ptr<Connection> conn = std::make_shared<Connection>(loop_, conn_fd, addr_, peer_addr);
+    conn->SetConnectionEstablishedCB(connection_established_cb_);
+    conn->SetMessageArrivalCB(message_arrival_cb_);
+    conn->SetReplyCompleteCB(reply_complete_cb_);
+    conn->SetConnectionCloseCB(connection_close_cb_);
+    // conn->SetSuicideCB(std::bind(&Server::RemoveConnection4CloseCB, this, std::placeholders::_1));
+
+    connection_map_[conn_fd] = conn;
+
+    // 在分配到的线程上注册事件
+    // io_loop->RunTask(std::bind(&Connection::Register, conn));
 }
 
-void Server::start() {
-	setUp();
-	Epoller epoller(listen_fd);
-	epoller.create();
-	epoller.addListenFd();
-	epoller.wait();
+// 移除连接，由线程池中线程调用
+void Server::RemoveConnection4CloseCB(const std::shared_ptr<Connection>& conn)
+{
+
+    // loop_->AddTask(std::bind(&Server::RemoveConnection, this, conn->GetFd()));
 }
 
-int Server::getFd() const {
-	return listen_fd;
+// 移除连接，在此线程调用
+void Server::RemoveConnection(int conn_fd)
+{
+    connection_map_.erase(conn_fd);
 }
 
 }

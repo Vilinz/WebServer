@@ -10,6 +10,10 @@ int main() {
   LOG_WARN(Vilin::Singleton<Vilin::Logger>::instance()) << "warn";
   LOG_ERROR(Vilin::Singleton<Vilin::Logger>::instance()) << "ERROR";
 
+  Vilin::Looper l;
+  Vilin::Server s(&l, 8000);
+  s.Start();
+
   //Vilin::Server s;
   //s.start();
   return 0;

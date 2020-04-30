@@ -1,36 +1,48 @@
 #ifndef LOOPER_H_
 #define LOOPER_H_
 #include <vector>
+#include <unistd.h>
+#include <mutex>
 #include <thread>
+#include <memory>
+#include <functional>
 #include "epoller.h"
 #include "./../base/timestamp.h"
 
 namespace Vilin {
 
-class Looper {
-private:
-	bool quit;
-	const std::thread::id threadId;
-	std::unique_ptr<Epoller> epoller;
+class EventBase;
+
+class Looper
+{
 public:
-	Looper();
-	~Looper();
-	void start();
-	void setQuit();
+    using Task = std::function<void()>;
 
-	void addEventBase(std::shared_ptr<EventBase> eventBase) {
-		epoller->add(eventBase);
-	}
-	void modEventBase(std::shared_ptr<EventBase> eventBase) {
-		epoller->mod(eventBase);
-	}
-	void delEventBase(std::shared_ptr<EventBase> eventBase) {
-		epoller->del(eventBase);
-	}
+    Looper();
+    ~Looper();
+    
+    // 开始事件循环
+    void Start();
+    // 退出循环，由其他线程调用
+    void Quit() { quit_ = true; }
 
-	bool isInBaseThread() const {
-		return threadId == std::this_thread::get_id();
-	}
+    // 注册事件
+    void AddEventBase(std::shared_ptr<EventBase> eventbase) { epoller_->add(eventbase); }
+    void ModEventBase(std::shared_ptr<EventBase> eventbase) { epoller_->mod(eventbase); }
+    void DelEventBase(std::shared_ptr<EventBase> eventbase) { epoller_->del(eventbase); }
+
+
+    void RunTask(Task&& task);
+
+private:
+    // 退出标识
+    bool quit_;
+
+
+    // 该loop所在线程id
+    const std::thread::id thread_id_;
+
+    std::unique_ptr<Epoller> epoller_;
 };
 
 }
