@@ -60,7 +60,6 @@ void Server::HandelNewConnection(Timestamp t)
 
     connection_map_[conn_fd] = conn;
     conn->Register();
-
     // 在分配到的线程上注册事件
     // io_loop->RunTask(std::bind(&Connection::Register, conn));
 }

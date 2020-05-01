@@ -12,7 +12,7 @@ EventBase::~EventBase() {}
 
 void EventBase::HandleEvent()
 {
-    std::cout << "handle connect" << std::endl;
+    std::cout << "handle call back" << std::endl;
     // 服务器端发生异常
     if ((revents_ & EPOLLHUP) && !(revents_ & EPOLLIN))
     {

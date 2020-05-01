@@ -30,19 +30,21 @@ int main() {
     std::cout << "...connect" << std::endl;
     char data[255];
     char buf[255];
-    while (true) {
-        std::cin >> data;
-        send(client, data, strlen(data), 0);
-        if (strcmp(data, "exit") == 0) {
-            std::cout << "...disconnect" << std::endl;
-            break;
-        }
-        memset(buf, 0, sizeof(buf));
-        int len = recv(client, buf, sizeof(buf), 0);
-        buf[len] = '\0';
-        std::cout << buf << std::endl;
-        break;
-    }
+    int len = recv(client, buf, sizeof(buf), 0);
+    std::cout << buf << std::endl;
+    //while (true) {
+    //    std::cin >> data;
+    //    send(client, data, strlen(data), 0);
+    //    if (strcmp(data, "exit") == 0) {
+    //        std::cout << "...disconnect" << std::endl;
+    //        break;
+    //    }
+    //    memset(buf, 0, sizeof(buf));
+    //    int len = recv(client, buf, sizeof(buf), 0);
+    //    buf[len] = '\0';
+    //    std::cout << buf << std::endl;
+     //   break;
+    //}
     close(client);
     return 0;
 }

@@ -3,6 +3,7 @@
 
 #include "looper.h"
 #include "./../base/timestamp.h"
+#include "./../base/anyone.h"
 #include <functional>
 #include <memory>
 #include "looper.h"
@@ -12,7 +13,7 @@ namespace Vilin {
 class Connection : public std::enable_shared_from_this<Connection> {
 public:
 	using Callback = std::function<void(const std::shared_ptr<Connection>&)>;
-  using MessageCallback = std::function<void(const std::shared_ptr<Connection>&, Timestamp)>;
+  using MessageCallback = std::function<void(const std::shared_ptr<Connection>&, char*, Timestamp)>;
 	
 	Connection(Looper* loop, int conn_sockfd, const struct sockaddr_in& local_addr, const struct sockaddr_in& peer_addr);
   ~Connection();
@@ -39,6 +40,10 @@ public:
 
   const int GetFd() const { return conn_sockfd_; }
 
+  void SetContext(const any& context) { context_ = context; }
+  const any& GetContext() const { return context_; }
+  any* GetMutableContext() { return &context_; }
+
  private:
 	Looper *loop_;
 
@@ -53,6 +58,9 @@ public:
 	Callback reply_complete_cb_;
 	Callback connection_close_cb_;
 	Callback suicide_cb_;
+
+  // 解析上下文
+  any context_;
 };
 
 }

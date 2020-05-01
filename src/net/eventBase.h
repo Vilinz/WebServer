@@ -62,7 +62,7 @@ private:
   ReadCallback read_callback_;
   Callback write_callback_;
   Callback error_callback_;
-    Callback close_callback_;
+   Callback close_callback_;
 };
 
 }
