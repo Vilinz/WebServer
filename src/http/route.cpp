@@ -86,7 +86,6 @@ bool Route::Match(const HttpRequest& request, std::unordered_map<std::string, st
     {
         if (!matcher.Match(request, match_map))
         {
-            std::cout << "hhhhh" << std::endl;
             match_map->clear();
             return false;
         }

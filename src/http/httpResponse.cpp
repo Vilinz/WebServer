@@ -6,6 +6,7 @@
 namespace Vilin {
 
 void HttpResponse::AppendHeaderToBuffer() {
+	memset(buffer_, 0, sizeof(buffer_)/sizeof(char));
 	char buf[32];
 	snprintf(buf, sizeof(buf), "HTTP/1.1 %d ", status_code_);
 
@@ -31,7 +32,6 @@ void HttpResponse::AppendHeaderToBuffer() {
 
 void HttpResponse::AppendBodyToBuffer(std::string& body) {
 	strcat(buffer_, body.c_str());
-	std::cout << buffer_ << std::endl;
 }
 
 }

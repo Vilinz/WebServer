@@ -24,7 +24,6 @@ Route::Handler Router::Match(const HttpRequest& request, std::unordered_map<std:
             return r->GetHandler();
         }
     }
-    std::cout << "mismatch" << std::endl;
     return nullptr;
 }
 

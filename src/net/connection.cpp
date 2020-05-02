@@ -73,6 +73,9 @@ void Connection::HandleRead(Timestamp t)
 	std::cout << "read data" << std::endl;
    	char szRecv[10240] = {};
    	int nLen = recv(conn_eventbase_->GetFd(), (char*)&szRecv, sizeof(szRecv), 0);
+    std::cout << "====================" << std::endl;
+    std::cout << szRecv << std::endl;
+    std::cout << "====================" << std::endl;
 
     if (nLen > 0)
     {

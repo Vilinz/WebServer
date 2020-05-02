@@ -1,6 +1,7 @@
 #include "httpParser.h"
 #include <iostream>
 #include <algorithm>
+#include <cstring>
 
 
 namespace Vilin {
@@ -113,13 +114,19 @@ bool HttpParser::ParseRequestLine(const char* begin, const char* end)
     return true;
 }
 
+char* findCRLF(char* beg) {
+    const char* CRLF = "\r\n";
+    char* f = strstr(beg, CRLF);
+    return f;
+}
+
 // 主状态机，解析整个请求
 bool HttpParser::ParseRequest(char* buf, Timestamp receive_time)
 {
     bool has_more = true;
 
-    const char* crlf;
-    bool ok = true;
+    char* crlf;
+    bool ok;
 
     const char* colon;
 
@@ -128,7 +135,73 @@ bool HttpParser::ParseRequest(char* buf, Timestamp receive_time)
 
     const char* ampersand;
     const char* equal;
-    state_ = PARSE_STATE_GOTALL;
+
+    while(has_more) {
+        switch(state_) {
+            case PARSE_STATE_REQUESTLINE:
+                crlf = findCRLF(buf);
+                if(crlf) {
+                    ok = ParseRequestLine(buf, crlf);
+                    if(ok) {
+                        request_.SetReceiveTime(receive_time);
+                        buf = crlf + 2;
+                        state_ = PARSE_STATE_HEADER;
+                    } else {
+                        has_more = false;
+                    }
+                } else {
+                    has_more = false;
+                }
+                break;
+            case PARSE_STATE_HEADER:
+                crlf = findCRLF(buf);
+                if(crlf) {
+                    colon = std::find(buf, crlf, ':');
+                    if(colon != crlf) {
+                        request_.AddHeader(buf, colon, crlf);
+                    } else {
+                        if(request_.GetHeader("Content-Length").size() == 0) {
+                            state_ = PARSE_STATE_GOTALL;
+                            has_more = false;
+                        } else {
+                            body_length_ = stoi(request_.GetHeader("Content-Length"));
+                            state_ = PARSE_STATE_BODY;
+                        }
+                    }
+                    buf = crlf + 2;
+                } else {
+                    has_more = false;
+                }
+                break;
+            case PARSE_STATE_BODY:
+                if(strlen(buf) >= body_length_) {
+                    start = buf;
+                    end = buf + body_length_;
+
+                    while((ampersand = std::find(start, end, '&')) != end) {
+                        equal = std::find(start, ampersand, '=');
+                        if(equal != ampersand) {
+                            request_.AddQuery(start, equal, ampersand);
+                        }
+                        start = ampersand + 1;
+                    }
+                    if(start != end) {
+                        equal = std::find(start, end, '=');
+                        if(equal != end) {
+                            request_.AddQuery(start, equal, end);
+                        }
+                    }
+                    state_ = PARSE_STATE_GOTALL;
+                    has_more = false;
+                } else {
+                    has_more = false;
+                }
+                break;
+            default:
+            has_more = false;
+            break;
+        }
+    }
     return ok;
 }
 

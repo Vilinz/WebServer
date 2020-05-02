@@ -20,7 +20,6 @@
 
 void MyHandler(const Vilin::HttpRequest& request, std::unordered_map<std::string, std::string>& match_map, Vilin::HttpResponse* response)
 {
-		std::cout << "he" << std::endl;
     response->SetStatusCode(Vilin::HttpResponse::OK);
     response->SetStatusMessage("OK");
     response->SetContentType("text/html");
