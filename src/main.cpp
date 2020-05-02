@@ -22,12 +22,23 @@ void MyHandler(const Vilin::HttpRequest& request, std::unordered_map<std::string
 {
     response->SetStatusCode(Vilin::HttpResponse::OK);
     response->SetStatusMessage("OK");
-    response->SetContentType("text/html");
+    response->SetContentType("application/json");
 
-    std::string body = "temp test page";
+    std::string body = "{\"key\":\"value\", \"age\":15}";
     response->AddHeader("Content-Length", std::to_string(body.size()));
     response->AppendHeaderToBuffer();
     response->AppendBodyToBuffer(body);
+}
+
+void userHandler(const Vilin::HttpRequest& request, std::unordered_map<std::string, std::string>& match_map, Vilin::HttpResponse* response) {
+	response->SetStatusCode(Vilin::HttpResponse::OK);
+  response->SetStatusMessage("OK");
+  response->SetContentType("application/json");
+
+  std::string body = "{\"name\":\"Vilin\", \"age\":20, \"height\":180}";
+  response->AddHeader("Content-Length", std::to_string(body.size()));
+  response->AppendHeaderToBuffer();
+  response->AppendBodyToBuffer(body);
 }
 
 int main()
@@ -41,6 +52,10 @@ int main()
     ->SetHeader("Connection", "keep-alive")
     ->SetHandler(MyHandler);
     
+    s.NewRoute()
+    ->SetPath("/user/{name:[a-zA-Z]+}")
+    ->SetHeader("Connection", "keep-alive")
+    ->SetHandler(userHandler);
 
     s.Start();
 }
