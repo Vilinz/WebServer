@@ -58,3 +58,9 @@
 2020-15-05/01/20 00:15:31	debug	src/main.cpp	9	debug
 2020-15-05/01/20 00:15:31	warn	src/main.cpp	10	warn
 2020-15-05/01/20 00:15:31	error	src/main.cpp	11	ERROR
+2020-39-05/03/20 01:39:20	error	src/mysql/database.cpp	65	open json file failed
+2020-43-05/03/20 01:43:36	error	src/mysql/database.cpp	65	open json file failed
+2020-47-05/03/20 01:47:37	error	src/mysql/database.cpp	65	open json file failed
+2020-47-05/03/20 01:47:55	error	src/mysql/database.cpp	65	open json file failed
+2020-49-05/03/20 01:49:48	error	src/mysql/database.cpp	65	open json file failed
+2020-50-05/03/20 01:50:40	error	src/mysql/database.cpp	65	open json file failed

@@ -5,6 +5,7 @@
 #include "net/server.h"
 #include "http/httpServer.h"
 #include "http/httpRequest.h"
+#include "mysql/database.h"
 	/*
   LOG_INFO(Vilin::Singleton<Vilin::Logger>::instance()) << "info";
   LOG_DEBUG(Vilin::Singleton<Vilin::Logger>::instance()) << "debug";
@@ -43,19 +44,30 @@ void userHandler(const Vilin::HttpRequest& request, std::unordered_map<std::stri
 
 int main()
 {
-    Vilin::Looper loop;
-    Vilin::HttpServer s(&loop, 8000);
+	/*
+  Vilin::Looper loop;
+  Vilin::HttpServer s(&loop, 8000);
 
-    s.NewRoute()
-    ->SetPath("/path/{name:[a-zA-Z]+}")
-    ->SetQuery("query", "t")
-    ->SetHeader("Connection", "keep-alive")
-    ->SetHandler(MyHandler);
-    
-    s.NewRoute()
-    ->SetPath("/user/{name:[a-zA-Z]+}")
-    ->SetHeader("Connection", "keep-alive")
-    ->SetHandler(userHandler);
+  s.NewRoute()
+  ->SetPath("/path/{name:[a-zA-Z]+}")
+  ->SetQuery("query", "t")
+  ->SetHeader("Connection", "keep-alive")
+  ->SetHandler(MyHandler);
+  
+  s.NewRoute()
+  ->SetPath("/user/{name:[a-zA-Z]+}")
+  ->SetHeader("Connection", "keep-alive")
+  ->SetHandler(userHandler);
 
-    s.Start();
+  s.Start();
+  */
+	Vilin::DataBase myDataBase;
+	if(myDataBase.init("127.0.0.1", "root", "111111", "webServer")) {
+		std::cout << "init success" << std::endl;
+	} else {
+		return -1;
+	}
+	myDataBase.exeSQL("select id, name, phone from webServer.users");
+
+	myDataBase.initDataBase();
 }
