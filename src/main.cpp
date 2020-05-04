@@ -67,7 +67,7 @@ int main()
 	} else {
 		return -1;
 	}
-	myDataBase.exeSQL("select id, name, phone from webServer.users");
+	//myDataBase.exeSQL("select id, name, phone from webServer.users");
 
 	myDataBase.initDataBase();
 }
