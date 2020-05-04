@@ -31,6 +31,18 @@ bool DataBase::init(std::string i, std::string u, std::string pwd, std::string d
 	return true;
 }
 
+bool DataBase::hadInsert(std::string sql) {
+	if(mysql_query(mysql, sql.c_str())) {
+		return false;
+	} else {
+		MYSQL_RES *result = mysql_store_result(mysql);
+		if(result && mysql_num_rows(result) > 0) {
+			return true;
+		}
+		return false;
+	}
+}
+
 bool DataBase::exeSQL(std::string sql) {
 	if(mysql_query(mysql, sql.c_str())) {
 		std::cout << "query error:" << mysql_error(mysql);
@@ -73,7 +85,7 @@ bool DataBase::exeSQL(std::string sql) {
 
 void DataBase::initDataBase() {
 
-	if(exeSQL("select group_id from webServer.news where group_id='6rpn/L5K52HooGQp9PZ/gA=='")) {
+	if(hadInsert("select group_id from webServer.news where group_id='6rpn/L5K52HooGQp9PZ/gA=='")) {
 		LOG_INFO(Singleton<Logger>::instance()) << "data had been insert";
 		return;
 	}

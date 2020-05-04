@@ -16,6 +16,8 @@ public:
 
 	void initDataBase();
 
+	bool hadInsert(std::string sql);
+
 	bool exeSQL(std::string sql);
 private:
 	std::string ip;
