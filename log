@@ -13266,3 +13266,26 @@
 2020-38-05/04/20 06:38:13	error	src/mysql/database.cpp	78	data had been insert
 2020-38-05/04/20 06:38:49	error	src/mysql/database.cpp	78	data had been insert
 2020-40-05/04/20 06:40:59	info	src/mysql/database.cpp	77	data had been insert
+2020-48-05/04/20 06:48:19	info	src/mysql/database.cpp	89	data had been insert
+2020-47-05/04/20 18:47:28	error	src/mysql/database.cpp	19	init success
+2020-53-05/04/20 19:53:40	error	src/mysql/database.cpp	19	init success
+2020-56-05/04/20 19:56:52	error	src/mysql/database.cpp	19	init success
+2020-00-05/04/20 20:00:02	error	src/mysql/database.cpp	19	init success
+2020-08-05/04/20 20:08:11	error	src/mysql/database.cpp	19	init success
+2020-10-05/04/20 20:10:32	error	src/mysql/database.cpp	19	init success
+2020-13-05/04/20 20:13:45	error	src/mysql/database.cpp	19	init success
+2020-14-05/04/20 20:14:55	error	src/mysql/database.cpp	19	init success
+2020-16-05/04/20 20:16:22	error	src/mysql/database.cpp	19	init success
+2020-17-05/04/20 20:17:01	error	src/mysql/database.cpp	19	init success
+2020-17-05/04/20 20:17:29	error	src/mysql/database.cpp	19	init success
+2020-18-05/04/20 20:18:23	error	src/mysql/database.cpp	19	init success
+2020-19-05/04/20 20:19:16	error	src/mysql/database.cpp	19	init success
+2020-21-05/04/20 20:21:25	error	src/mysql/database.cpp	19	init success
+2020-22-05/04/20 20:22:18	error	src/mysql/database.cpp	19	init success
+2020-23-05/04/20 20:23:45	error	src/mysql/database.cpp	19	init success
+2020-24-05/04/20 20:24:20	error	src/mysql/database.cpp	19	init success
+2020-25-05/04/20 20:25:50	error	src/mysql/database.cpp	19	init success
+2020-26-05/04/20 20:26:35	error	src/mysql/database.cpp	19	init success
+2020-35-05/04/20 20:35:28	error	src/mysql/database.cpp	19	init success
+2020-39-05/04/20 20:39:52	error	src/mysql/database.cpp	19	init success
+2020-31-05/05/20 01:31:24	error	src/mysql/database.cpp	19	init success

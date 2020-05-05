@@ -4,6 +4,7 @@
 #include <iostream>
 #include <string>
 #include <mysql/mysql.h>
+#include <memory>
 
 namespace Vilin {
 
@@ -18,6 +19,7 @@ public:
 
 	bool hadInsert(std::string sql);
 
+	MYSQL_RES* querySQL(std::string sql);
 	bool exeSQL(std::string sql);
 private:
 	std::string ip;
@@ -26,6 +28,7 @@ private:
 	std::string dataBaseName;
 	MYSQL *mysql;
 	std::string fileName;
+	MYSQL_RES *result;
 };
 
 }

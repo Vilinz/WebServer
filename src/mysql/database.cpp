@@ -1,10 +1,10 @@
-#include "database.h"
 #include "./../singleton/singleton.h"
 #include "./../logger/logger.h"
 #include <jsoncpp/json/json.h>
 #include <iostream>
 #include <cstring>
 #include <fstream>
+#include "database.h"
 
 namespace Vilin {
 
@@ -12,6 +12,13 @@ DataBase::DataBase() : fileName("./data/newsData.json") {
 	mysql = mysql_init(nullptr);
 	if(mysql == nullptr) {
 		std::cout << "error:" << mysql_error(mysql);
+		exit(1);
+	}
+
+	if(init("127.0.0.1", "root", "111111", "webServer")) {
+		LOG_ERROR(Singleton<Logger>::instance()) << "init success";
+	} else {
+		LOG_ERROR(Singleton<Logger>::instance()) << "init error";
 		exit(1);
 	}
 }
@@ -43,13 +50,60 @@ bool DataBase::hadInsert(std::string sql) {
 	}
 }
 
+MYSQL_RES* DataBase::querySQL(std::string sql) {
+	mysql_free_result(result);
+	if(mysql_query(mysql, sql.c_str())) {
+		std::cout << "query error:" << mysql_error(mysql);
+		return nullptr;
+	} else {
+		result = mysql_store_result(mysql);
+		if(result) {
+			/*
+			int num_fields = mysql_num_fields(result);
+			int num_rows = mysql_num_rows(result);
+			for(int i = 0; i < num_rows; i++) {
+				MYSQL_ROW row = mysql_fetch_row(result);
+				if(row < 0) {
+					break;
+				}
+				for(int j = 0; j < num_fields; j++) {
+					std::cout << row[j] << "\t";
+				}
+				std::cout << std::endl;
+			}
+			if(num_rows <= 0) {
+				LOG_ERROR(Singleton<Logger>::instance()) << "empty query";
+				return nullptr;
+			}
+			*/
+			return result;
+		} else {
+			return nullptr;
+			/*
+			if(mysql_field_count(mysql) == 0) { //非查询语句
+				int num_rows = mysql_affected_rows(mysql);
+				if(num_rows > 0) {
+					return true;
+				} else {
+					return false;
+				}
+			} else {
+				std::cout << "get result error:" << mysql_error(mysql);
+				return false;
+			}
+			*/
+		}
+	}
+}
+
 bool DataBase::exeSQL(std::string sql) {
 	if(mysql_query(mysql, sql.c_str())) {
 		std::cout << "query error:" << mysql_error(mysql);
 		return false;
 	} else {
-		MYSQL_RES *result = mysql_store_result(mysql);
+		MYSQL_RES* result = mysql_store_result(mysql);
 		if(result) {
+			
 			int num_fields = mysql_num_fields(result);
 			int num_rows = mysql_num_rows(result);
 			for(int i = 0; i < num_rows; i++) {

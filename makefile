@@ -1,10 +1,10 @@
 VPATH = src:src/logger:src/singleton:src/net:src/base:src/http:src/mysql
 compile = g++ -g -std=c++11 `mysql_config --cflags --libs` -ljsoncpp 
 objects = main.o logger.o eventBase.o epoller.o looper.o connection.o server.o util.o httpResponse.o matcher.o route.o router.o httpParser.o httpServer.o database.o
-
+# singleton.h logger.h server.h httpServer.h httpRequest.h database.h
 myServer : $(objects)
 	$(compile) -o myServer $(objects)
-main.o : main.cpp singleton.h logger.h server.h httpServer.h httpRequest.h database.h
+main.o : main.cpp help.h
 	$(compile) -c $<
 logger.o : logger.cpp logger.h singleton.h
 	$(compile) -c $<

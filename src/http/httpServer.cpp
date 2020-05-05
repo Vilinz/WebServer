@@ -84,10 +84,12 @@ void HttpServer::OnRequest(const std::shared_ptr<Connection>& conn, const HttpRe
         default_handler_(request, match_map, &response);
     }
 
+    /*
     // 发送响应内容
     std::cout << "--------------------" << std::endl;
     std::cout << response.GetBuffer() << std::endl;
     std::cout << "--------------------" << std::endl;
+    */
     conn->Send(response.GetBuffer());
     // 如果不是长连接就关闭底层的tcp连接
     if (response.GetCloseConnection())

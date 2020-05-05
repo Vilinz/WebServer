@@ -35,7 +35,7 @@ void Connection::Send(const void* data, size_t len)
     // 当output buffer为空时直接write而不经过缓冲区
     if (!conn_eventbase_->IsWriting())
     {
-    	std::cout << "in send" << std::endl;
+    	// std::cout << "in send" << std::endl;
         n_wrote = write(conn_eventbase_->GetFd(), data, len);
         if (n_wrote >= 0)
         {
@@ -70,12 +70,14 @@ void Connection::Shutdown()
 // 处理可读事件
 void Connection::HandleRead(Timestamp t)
 {
-	std::cout << "read data" << std::endl;
+	// std::cout << "read data" << std::endl;
    	char szRecv[10240] = {};
    	int nLen = recv(conn_eventbase_->GetFd(), (char*)&szRecv, sizeof(szRecv), 0);
+    /*
     std::cout << "====================" << std::endl;
     std::cout << szRecv << std::endl;
     std::cout << "====================" << std::endl;
+    */
 
     if (nLen > 0)
     {
